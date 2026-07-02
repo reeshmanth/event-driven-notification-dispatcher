@@ -10,6 +10,16 @@ A background worker processes queued notifications asynchronously, simulates not
 
 ---
 
+# 🌐 Live Demo
+
+The application is deployed and available at:
+
+**https://event-driven-notification-dispatcher-ht82.onrender.com/**
+
+> **Note:** The application is hosted on Render's free tier. If the service has been idle, the first request may take up to a minute while the server wakes up. After that, responses are significantly faster.
+
+---
+
 # Features
 
 - REST API built using Express.js
@@ -150,6 +160,34 @@ http://localhost:3000
 
 ---
 
+# Live Demo Instructions
+
+Visit the deployed application:
+
+**https://event-driven-notification-dispatcher-ht82.onrender.com/**
+
+### Demonstration Steps
+
+1. Click **Send Valid Event**.
+2. Observe the API immediately returning **HTTP 202 Accepted**.
+3. Watch the processing pipeline update step-by-step.
+4. Notice that a notification is first created with **pending** status.
+5. The background worker processes the queued notification asynchronously.
+6. The notification status is then updated to either **completed** or **failed**.
+
+### Demonstrating Queue Processing
+
+To clearly demonstrate the in-memory queue:
+
+- Continuously click **Send Valid Event** several times.
+- Multiple notification requests will be added to the queue.
+- The queue size and pending notification count will increase.
+- The background worker processes notifications independently.
+- Due to the simulated **10% failure rate**, some notifications will eventually appear as **failed** while others become **completed**.
+- Failed notifications also demonstrate the **retry_count** functionality.
+
+---
+
 # API Endpoint
 
 ## POST /api/v1/events
@@ -206,6 +244,9 @@ curl -X POST http://localhost:3000/api/v1/events \
   }
 }'
 ```
+
+---
+
 # Database Schema
 
 ## Events Table
@@ -302,35 +343,48 @@ curl -X POST http://localhost:3000/api/v1/events \
 
 ## Queue Processing Failure
 
-The API still returns
-
-```
-202 Accepted
-```
-
-because notification processing happens asynchronously.
-
-The failure is logged and the worker handles the error gracefully.
+The API still returns **HTTP 202 Accepted** because notification processing occurs asynchronously. Any queue processing errors are handled by the background worker without affecting the client response.
 
 ---
 
 ## Notification Update Failure
 
-If updating the notification status fails, the worker catches the error and logs it without crashing the application.
+If updating the notification status fails, the background worker catches the error, logs it, and continues processing remaining queued notifications.
 
 ---
 
 # Assumptions
 
-- Default notification channel is **email**
-- SQLite is used as the local database
-- Notifications are simulated (no real email service)
-- Queue is maintained entirely in memory
-- Background worker starts automatically with the server
+- Default notification channel is **email**.
+- SQLite is used as the local database.
+- Notifications are simulated (no real email provider).
+- Queue is maintained entirely in memory.
+- Background worker starts automatically with the server.
+
+---
+
+# Architecture Diagram
+
+The complete application architecture is provided in:
+
+```
+architecture-diagram.png
+```
+
+The diagram illustrates:
+
+- Client
+- POST `/api/v1/events`
+- Express API
+- SQLite Events Table
+- SQLite Notifications Table
+- In-Memory Queue
+- Background Worker
+- Simulated Notification Sending
+- Status Update (`completed` / `failed`)
 
 ---
 
 # Author
 
 **Reeshmanth Chowdary D**
-
