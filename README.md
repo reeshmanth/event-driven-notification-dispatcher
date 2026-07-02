@@ -158,36 +158,6 @@ Open the dashboard in your browser
 http://localhost:3000
 ```
 
----
-
-# Live Demo Instructions
-
-Visit the deployed application:
-
-**https://event-driven-notification-dispatcher-ht82.onrender.com/**
-
-### Demonstration Steps
-
-1. Click **Send Valid Event**.
-2. Observe the API immediately returning **HTTP 202 Accepted**.
-3. Watch the processing pipeline update step-by-step.
-4. Notice that a notification is first created with **pending** status.
-5. The background worker processes the queued notification asynchronously.
-6. The notification status is then updated to either **completed** or **failed**.
-
-### Demonstrating Queue Processing
-
-To clearly demonstrate the in-memory queue:
-
-- Continuously click **Send Valid Event** several times.
-- Multiple notification requests will be added to the queue.
-- The queue size and pending notification count will increase.
-- The background worker processes notifications independently.
-- Due to the simulated **10% failure rate**, some notifications will eventually appear as **failed** while others become **completed**.
-- Failed notifications also demonstrate the **retry_count** functionality.
-
----
-
 # API Endpoint
 
 ## POST /api/v1/events
