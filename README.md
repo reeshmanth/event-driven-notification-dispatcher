@@ -333,27 +333,6 @@ If updating the notification status fails, the background worker catches the err
 
 ---
 
-# Architecture Diagram
-
-The complete application architecture is provided in:
-
-```
-architecture-diagram.png
-```
-
-The diagram illustrates:
-
-- Client
-- POST `/api/v1/events`
-- Express API
-- SQLite Events Table
-- SQLite Notifications Table
-- In-Memory Queue
-- Background Worker
-- Simulated Notification Sending
-- Status Update (`completed` / `failed`)
-
----
 
 # Author
 
