@@ -330,15 +330,6 @@ If updating the notification status fails, the worker catches the error and logs
 
 ---
 
-# Limitations
-
-- Queue contents are lost if the server stops.
-- Notifications are simulated using `setTimeout()`.
-- Failed notifications increment `retry_count` but are not automatically retried.
-- The application is intended for demonstration purposes and is not distributed across multiple servers.
-
----
-
 # Author
 
 **Reeshmanth Chowdary D**
