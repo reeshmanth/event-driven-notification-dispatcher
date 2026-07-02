@@ -1,0 +1,25 @@
+{
+  "name": "event-notification-dispatcher",
+  "version": "1.0.0",
+  "description": "Event-driven asynchronous notification dispatcher using Express, Node.js, and SQLite.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "express",
+    "sqlite",
+    "notifications",
+    "queue"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sql.js": "^1.14.1",
+    "sqlite3": "^5.1.7"
+  }
+}

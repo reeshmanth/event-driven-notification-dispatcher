@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Notification Dispatcher</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Assessment Live Demo</p>
+          <h1>Event-Driven Notification Dispatcher</h1>
+          <p class="subtle">Shows the required API flow: validate request, save event, create pending notification, queue it, return 202 immediately, then process in the background.</p>
+        </div>
+        
+      </header>
+
+      <section class="pipeline" aria-label="Required API behavior">
+        <article class="stage" id="stage-validate">
+          <span>1</span>
+          <strong>Validate request</strong>
+          <small>event_type + recipient</small>
+        </article>
+        <article class="stage" id="stage-event">
+          <span>2</span>
+          <strong>Save event</strong>
+          <small>events table</small>
+        </article>
+        <article class="stage" id="stage-notification">
+          <span>3</span>
+          <strong>Create notification</strong>
+          <small>pending status</small>
+        </article>
+        <article class="stage" id="stage-queue">
+          <span>4</span>
+          <strong>Push to queue</strong>
+          <small>in-memory task</small>
+        </article>
+        <article class="stage" id="stage-response">
+          <span>5</span>
+          <strong>Return 202</strong>
+          <small>immediate response</small>
+        </article>
+        <article class="stage" id="stage-worker">
+          <span>6</span>
+          <strong>Worker updates</strong>
+          <small>completed or failed</small>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">POST /api/v1/events</p>
+              <h2>Trigger Event</h2>
+            </div>
+            <span class="method">202 Accepted</span>
+          </div>
+
+          <form id="event-form">
+            <label>
+              Event type
+              <input name="event_type" value="order_placed" required>
+            </label>
+
+            <label>
+              Recipient
+              <input name="recipient" type="email" value="user@example.com" required>
+            </label>
+
+            <label>
+              Order ID
+              <input name="order_id" type="number" value="101" required>
+            </label>
+
+            <div class="actions">
+              <button type="submit">Send Valid Event</button>
+              <button id="bad-request" class="secondary" type="button">Test 400 Error</button>
+            </div>
+          </form>
+
+          <div class="proof">
+            <div>
+              <span id="http-status">Waiting</span>
+              <small>HTTP status</small>
+            </div>
+            <div>
+              <span id="response-time">0 ms</span>
+              <small>response time</small>
+            </div>
+            <div>
+              <span id="tracking-id">-</span>
+              <small>tracking_id</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel dark">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Immediate API Response</p>
+              <h2>Client Receives This First</h2>
+            </div>
+          </div>
+          <pre id="response">Click "Send Valid Event" to call the API.</pre>
+        </article>
+      </section>
+
+      <section class="grid lower">
+        <article class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Live Database / Queue Monitor</p>
+              <h2>Notifications Table</h2>
+            </div>
+            <button id="refresh" class="secondary" type="button">Refresh</button>
+          </div>
+
+          <div class="metrics">
+            <div>
+              <strong id="queue-size">0</strong>
+              <span>Queue size</span>
+            </div>
+            <div>
+              <strong id="pending-count">0</strong>
+              <span>Pending</span>
+            </div>
+            <div>
+              <strong id="completed-count">0</strong>
+              <span>Completed</span>
+            </div>
+            <div>
+              <strong id="failed-count">0</strong>
+              <span>Failed</span>
+            </div>
+          </div>
+
+          <div id="notifications" class="notifications"></div>
+        </article>
+
+        <article class="panel">
+
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">SQLite Database</p>
+            <h2>Latest Database Record</h2>
+        </div>
+
+        <button id="refresh-db" class="secondary" type="button">
+            Refresh
+        </button>
+    </div>
+
+    <div id="latest-record">
+
+        <div class="record-section">
+
+            <h3>Event Table</h3>
+
+            <div class="record-row">
+                <span>Event ID</span>
+                <strong id="event-id">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Event Type</span>
+                <strong id="event-type">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Recipient</span>
+                <strong id="event-recipient">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Order ID</span>
+                <strong id="event-order">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Created At</span>
+                <strong id="event-created">-</strong>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="record-section">
+
+            <h3>Notification Table</h3>
+
+            <div class="record-row">
+                <span>Notification ID</span>
+                <strong id="notification-id">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Event ID</span>
+                <strong id="notification-event-id">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Recipient</span>
+                <strong id="notification-recipient">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Channel</span>
+                <strong id="notification-channel">-</strong>
+            </div>
+
+            <div class="record-row">
+                <span>Status</span>
+                <span id="notification-status" class="status pending">
+                    pending
+                </span>
+            </div>
+
+            <div class="record-row">
+                <span>Retry Count</span>
+                <strong id="notification-retry">0</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</article>
+        
+      </section>
+    </main>
+
+    <script src="/main.js"></script>
+  </body>
+</html>
